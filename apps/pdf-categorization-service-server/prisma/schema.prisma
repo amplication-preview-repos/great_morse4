@@ -1,0 +1,58 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Pdf {
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  uploadDate        DateTime?
+  fileName          String?
+  status            EnumPdfStatus?
+  metadata          Json?
+  extractedContents ExtractedContent[]
+}
+
+model ExtractedContent {
+  id          String                           @id @default(cuid())
+  createdAt   DateTime                         @default(now())
+  updatedAt   DateTime                         @updatedAt
+  pageNumber  Int?
+  contentType EnumExtractedContentContentType?
+  content     Json?
+  pdf         Pdf?                             @relation(fields: [pdfId], references: [id])
+  pdfId       String?
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?
+  name        String?
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?
+  lastName  String?
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  roles     Json
+}
+
+enum EnumPdfStatus {
+  Option1
+}
+
+enum EnumExtractedContentContentType {
+  Option1
+}
